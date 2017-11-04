@@ -1,11 +1,5 @@
 Single page basic Online Store app; React and Redux with Golang Web Api.
 
-# Web Site
-- http://localhost:3000/web
-
-# Admin Panel
-- http://localhost:3000/admin
-
 # Web API
 - Gorilla Mux
 - JWT Token Authentication
@@ -51,3 +45,9 @@ cd OnlineStoreReact folder location
 npm install 
 npm start
 ```
+
+### Web Site
+- http&#58;//localhost:3000/web
+
+### Admin Panel
+- http&#58;//localhost:3000/admin
