@@ -7,6 +7,7 @@ Single page basic Online Store app; React and Redux with Golang Web Api.
 - http://localhost:3000/admin
 
 # Web API
+- Gorilla Mux
 - JWT Token Authentication
 - Golang Gorm (mssql)
 
