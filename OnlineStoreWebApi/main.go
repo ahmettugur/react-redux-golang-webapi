@@ -29,7 +29,7 @@ func CreateTokenEndpoint(w http.ResponseWriter, req *http.Request) {
 	//c:=ClaimUser{UserId:validateUser.UserId,FullName:validateUser.FullName,Password:validateUser.Email}
 	roles,err := business.User{}.GetUserRoles(validateUser.UserId)
 	if err != nil{
-		fmt.Println("Hata var: ")
+		fmt.Println(err)
 	}
 	validateUser.Roles = *roles
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
