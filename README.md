@@ -31,6 +31,7 @@ Change OnlineStoreWebApi>database>database.go>InitDB function connString variabl
 ```
 
 ### Installation Go Package
+Open command prompt or terminal
 ```sh
 go get "github.com/jinzhu/gorm"
 go get "github.com/gorilla/mux"
@@ -42,7 +43,7 @@ go get "github.com/dgrijalva/jwt-go"
 
 ### Installation Node Module
 
-Open command prompt
+Open command prompt or teminal
 
 ```sh
 cd OnlineStoreReact folder location
