@@ -30,6 +30,16 @@ Open SQL Server Management Studio > File > Open > File  select Store.sql and exe
 Change OnlineStoreWebApi>database>database.go>InitDB function connString variable change Data Source your server name
 ```
 
+### Installation Go Package
+```sh
+go get "github.com/jinzhu/gorm"
+go get "github.com/gorilla/mux"
+go get "github.com/gorilla/context"
+go get "github.com/mitchellh/mapstructure"
+go get "github.com/dgrijalva/jwt-go"
+
+```
+
 ### Installation Node Module
 
 Open command prompt
