@@ -1,18 +1,18 @@
 package business
 
 import (
-	database "../database"
-	entity "../entities"
 	"log"
+	database "onlinestorewebapi/database"
+	entity "onlinestorewebapi/entities"
 )
 
-type ProductWithCategory struct {}
+type ProductWithCategory struct{}
 
-func (pwc ProductWithCategory) GetAll() (*[]entity.ProductWithCategory,error) {
-	db,err:=database.InitDB()
+func (pwc ProductWithCategory) GetAll() (*[]entity.ProductWithCategory, error) {
+	db, err := database.InitDB()
 
 	if err != nil {
-		return &[]entity.ProductWithCategory{},err
+		return &[]entity.ProductWithCategory{}, err
 	}
 	defer database.CloseDb(db)
 
@@ -24,6 +24,6 @@ func (pwc ProductWithCategory) GetAll() (*[]entity.ProductWithCategory,error) {
 		log.Fatal(err)
 	}
 
-	return  &productWithCategory,nil
+	return &productWithCategory, nil
 
 }

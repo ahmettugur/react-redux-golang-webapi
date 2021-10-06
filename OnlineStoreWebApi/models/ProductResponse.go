@@ -1,11 +1,11 @@
 package models
 
-import entity "../entities"
+import entity "onlinestorewebapi/entities"
 
 type ProductResponse struct {
 	CurrentCategory int
-	CurrentPage int
-	PageCount int
-	PageSize int
-	Products []entity.Product
+	CurrentPage     int
+	PageCount       int
+	PageSize        int
+	Products        []entity.Product
 }

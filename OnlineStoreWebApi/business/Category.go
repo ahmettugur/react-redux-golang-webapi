@@ -1,26 +1,26 @@
 package business
 
 import (
-	database "../database"
-	entity "../entities"
+	database "onlinestorewebapi/database"
+	entity "onlinestorewebapi/entities"
 )
 
 type Category struct{}
 
-func (c Category) GetAll() (*[]entity.Category,error){
+func (c Category) GetAll() (*[]entity.Category, error) {
 	db, err := database.InitDB()
 	if err != nil {
-		return &[]entity.Category{},err
+		return &[]entity.Category{}, err
 	}
 
 	defer database.CloseDb(db)
 
 	var categories []entity.Category
 	db.Order("Id DESC").Find(&categories)
-	return &categories,nil
+	return &categories, nil
 }
 
-func (c Category) Get(id int) (*entity.Category,error) {
+func (c Category) Get(id int) (*entity.Category, error) {
 	db, err := database.InitDB()
 	if err != nil {
 		return &entity.Category{}, err
@@ -31,7 +31,7 @@ func (c Category) Get(id int) (*entity.Category,error) {
 	var category entity.Category
 	db.Where("Id = ?", id).Find(&category)
 
-	return &category,nil
+	return &category, nil
 }
 
 func (c Category) Add(category *entity.Category) (*entity.Category, error) {

@@ -1,53 +1,58 @@
 package main
 
 import (
-	controller "./controllers"
-	entity "./entities"
-	business "./business"
-	utilities "./utilities"
 	"net/http"
+
+	business "onlinestorewebapi/business"
+
+	controller "onlinestorewebapi/controllers"
+	entity "onlinestorewebapi/entities"
+	utilities "onlinestorewebapi/utilities"
+
 	"github.com/gorilla/mux"
+
 	//"github.com/gorilla/handlers"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gorilla/context"
-	"github.com/mitchellh/mapstructure"
 	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/context"
+	"github.com/mitchellh/mapstructure"
 )
 
 func CreateTokenEndpoint(w http.ResponseWriter, req *http.Request) {
 	var user entity.User
 	_ = json.NewDecoder(req.Body).Decode(&user)
-	validateUser,_ := business.User{}.ValidateUser(user.Email,user.Password)
+	validateUser, _ := business.User{}.ValidateUser(user.Email, user.Password)
 
-	if validateUser== nil {
+	if validateUser == nil {
 		json.NewEncoder(w).Encode(utilities.Exception{Message: "User Not found"})
 		return
 	}
 	//c:=ClaimUser{UserId:validateUser.UserId,FullName:validateUser.FullName,Password:validateUser.Email}
-	roles,err := business.User{}.GetUserRoles(validateUser.UserId)
-	if err != nil{
+	roles, err := business.User{}.GetUserRoles(validateUser.UserId)
+	if err != nil {
 		fmt.Println(err)
 	}
 	validateUser.Roles = *roles
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"UserId":validateUser.UserId,
-		"FullName":validateUser.FullName,
-		"Password":validateUser.Password,
-		"Email":validateUser.Email,
-		"Roles":validateUser.Roles,
-		"exp":time.Now().Add(time.Hour * 10).Unix(),
+		"UserId":   validateUser.UserId,
+		"FullName": validateUser.FullName,
+		"Password": validateUser.Password,
+		"Email":    validateUser.Email,
+		"Roles":    validateUser.Roles,
+		"exp":      time.Now().Add(time.Hour * 10).Unix(),
 	})
 
-	fmt.Println("validateUser: ",*validateUser)
+	fmt.Println("validateUser: ", *validateUser)
 
 	tokenString, error := token.SignedString([]byte("secret"))
 	if error != nil {
 		fmt.Println(error)
 	}
-	fmt.Println("tokenString: ",tokenString )
+	fmt.Println("tokenString: ", tokenString)
 	json.NewEncoder(w).Encode(utilities.JwtToken{Token: tokenString})
 }
 
@@ -132,35 +137,33 @@ func main() {
 	//fmt.Println(p)
 	apiRoot := "/api"
 
-	gorillaRoute:=mux.NewRouter()
+	gorillaRoute := mux.NewRouter()
 
 	gorillaRoute.HandleFunc("/token", CreateTokenEndpoint).Methods("POST")
-	gorillaRoute.HandleFunc(apiRoot+"/categories",controller.CategoriesController{}.GetAll).Methods("GET")
-	gorillaRoute.HandleFunc(apiRoot+"/categories/{categoryId}",controller.CategoriesController{}.Get).Methods("GET")
-	gorillaRoute.HandleFunc(apiRoot+"/products/{categoryId}/{page}",controller.ProductsController{}.GetAllProduct).Methods("GET")
-	gorillaRoute.HandleFunc(apiRoot+"/products/{productId}",controller.ProductsController{}.GetProduct).Methods("GET")
+	gorillaRoute.HandleFunc(apiRoot+"/categories", controller.CategoriesController{}.GetAll).Methods("GET")
+	gorillaRoute.HandleFunc(apiRoot+"/categories/{categoryId}", controller.CategoriesController{}.Get).Methods("GET")
+	gorillaRoute.HandleFunc(apiRoot+"/products/{categoryId}/{page}", controller.ProductsController{}.GetAllProduct).Methods("GET")
+	gorillaRoute.HandleFunc(apiRoot+"/products/{productId}", controller.ProductsController{}.GetProduct).Methods("GET")
 
-	gorillaRoute.HandleFunc(apiRoot+"/admin/products/{page}",ValidateMiddleware(controller.ProductsController{}.GetAdminProduct)).Methods("GET")
+	gorillaRoute.HandleFunc(apiRoot+"/admin/products/{page}", ValidateMiddleware(controller.ProductsController{}.GetAdminProduct)).Methods("GET")
 
-	gorillaRoute.HandleFunc(apiRoot+"/admin/categories",controller.CategoriesController{}.Add).Methods("POST")
-	gorillaRoute.HandleFunc(apiRoot+"/admin/categories",ValidateMiddleware(controller.CategoriesController{}.Update)).Methods("PUT")
-	gorillaRoute.HandleFunc(apiRoot+"/admin/categories/{categoryId}",ValidateMiddleware(controller.CategoriesController{}.Delete)).Methods("DELETE")
+	gorillaRoute.HandleFunc(apiRoot+"/admin/categories", controller.CategoriesController{}.Add).Methods("POST")
+	gorillaRoute.HandleFunc(apiRoot+"/admin/categories", ValidateMiddleware(controller.CategoriesController{}.Update)).Methods("PUT")
+	gorillaRoute.HandleFunc(apiRoot+"/admin/categories/{categoryId}", ValidateMiddleware(controller.CategoriesController{}.Delete)).Methods("DELETE")
 
-	gorillaRoute.HandleFunc(apiRoot+"/admin/products",ValidateMiddleware(controller.ProductsController{}.Add)).Methods("POST")
-	gorillaRoute.HandleFunc(apiRoot+"/admin/products",ValidateMiddleware(controller.ProductsController{}.Update)).Methods("PUT")
-	gorillaRoute.HandleFunc(apiRoot+"/admin/products/{productId}",ValidateMiddleware(controller.ProductsController{}.Delete)).Methods("DELETE")
-
-
+	gorillaRoute.HandleFunc(apiRoot+"/admin/products", ValidateMiddleware(controller.ProductsController{}.Add)).Methods("POST")
+	gorillaRoute.HandleFunc(apiRoot+"/admin/products", ValidateMiddleware(controller.ProductsController{}.Update)).Methods("PUT")
+	gorillaRoute.HandleFunc(apiRoot+"/admin/products/{productId}", ValidateMiddleware(controller.ProductsController{}.Delete)).Methods("DELETE")
 
 	var h http.Handler = CORSMiddleware{gorillaRoute}
-	http.ListenAndServe(":3500",h)
+	http.ListenAndServe(":3500", h)
 	//http.Handle("/",gorillaRoute)
 	//http.ListenAndServe(":3500",handlers.CORS()(gorillaRoute))
 
-/*
-	fmt.Println("Starting the application...")
-	router.HandleFunc("/authenticate", CreateTokenEndpoint).Methods("POST")
-	router.HandleFunc("/protected", ProtectedEndpoint).Methods("GET")
-	router.HandleFunc("/test", ValidateMiddleware(TestEndpoint)).Methods("GET")
-*/
+	/*
+		fmt.Println("Starting the application...")
+		router.HandleFunc("/authenticate", CreateTokenEndpoint).Methods("POST")
+		router.HandleFunc("/protected", ProtectedEndpoint).Methods("GET")
+		router.HandleFunc("/test", ValidateMiddleware(TestEndpoint)).Methods("GET")
+	*/
 }
